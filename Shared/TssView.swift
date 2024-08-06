@@ -30,7 +30,9 @@ func helperTssClient(threshold_key: ThresholdKey, factorKey: String, verifier: S
 
     let (urls, socketUrls, partyIndexes, nodeInd) = try TSSHelpers.generateEndpoints(parties: parties, clientIndex: Int(clientIndex), nodeIndexes: nodeIndexes, urls: tssEndpoints)
 
-    let coeffs = try TSSHelpers.getServerCoefficients(participatingServerDKGIndexes: nodeInd.map({ BigInt($0) }), userTssIndex: userTssIndex)
+    var indexs = nodeInd.map({ BigInt($0) })
+    indexs = indexs.sorted()
+    let coeffs = try TSSHelpers.getServerCoefficients(participatingServerDKGIndexes: indexs, userTssIndex: userTssIndex)
 
     let shareUnsigned = BigUInt(tssShare, radix: 16)!
     let share = BigInt(sign: .plus, magnitude: shareUnsigned)
@@ -383,6 +385,7 @@ struct TssView: View {
                 } catch {
                     alertContent = "Signing could not be completed. please try again"
                     showAlert = true
+                    print("catch error:\(error)")
                 }
             }
         }) { Text("Sign") }.disabled( !signingData )

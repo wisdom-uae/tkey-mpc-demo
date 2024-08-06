@@ -167,10 +167,9 @@ struct ThresholdKeyView: View {
                                         return
                                     }
                                     torusUtils = TorusUtils( enableOneKey: true,
-//                                                                 allowHost: "https://signer.tor.us/api/allow",
-                                                                 network: .sapphire(.SAPPHIRE_DEVNET)
-//                                                                 metadataHost: "https://sapphire-dev-2-1.authnetwork.dev/metadata",
-//                                                                 clientId: "YOUR_CLIENT_ID"
+                                                                 allowHost: "https://signer.tor.us/api/allow",
+                                                                 network: .sapphire(.SAPPHIRE_DEVNET),
+                                                                 clientId: "BJlz-2NXMALL42MdbuCIR-c-b-FlwTlejYbzoidzelUd8bMJMJYxhw4QDlgtqKwgA_rUG8FrTx8kQjeZ2Phs-CU"
                                                              )
                                     let fnd = NodeDetailManager(network: .sapphire(.SAPPHIRE_DEVNET))
                                     nodeDetails = try await fnd.getNodeDetails(verifier: verifier, verifierID: verifierId)
@@ -210,6 +209,7 @@ struct ThresholdKeyView: View {
 
                                     totalShares = Int(key_details.total_shares)
                                     threshold = Int(key_details.threshold)
+                                    print("key detail:\(key_details)")
                                     tkeyInitalized = true
 
                                     // fetch all locally available shares for this google account
@@ -323,170 +323,170 @@ struct ThresholdKeyView: View {
                             }
                         }
 
-//                        HStack {
-//                            Text("Enter SecurityQuestion password and reconstruct tkey & save share locally")
-//                            Spacer()
-//                            Button(action: {
-//                                let alert = UIAlertController(title: "Enter Password", message: nil, preferredStyle: .alert)
-//                                alert.addTextField { textField in
-//                                    textField.placeholder = "Password"
-//                                }
-//                                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-//                                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] _ in
-//                                    guard let textField = alert?.textFields?.first, let answer = textField.text else { return }
-//                                    Task {
-//                                        do {
-//                                            guard let result = try? await SecurityQuestionModule.input_share(threshold_key: threshold_key, answer: answer) else {
-//                                                alertContent = "input share failed. Make sure threshold key is initialized"
-//                                                showAlert = true
-//                                                return
-//                                            }
-//                                            if result {
-//                                                // save this share locally
-//                                                let shareIndexes = try threshold_key.get_shares_indexes()
-//
-//                                                // let's get the device share index
-//                                                var securityQuestionShareIndex = ""
-//                                                if shareIndexes[0] == "1" {
-//                                                    securityQuestionShareIndex = shareIndexes[1]
-//                                                } else {
-//                                                    securityQuestionShareIndex = shareIndexes[0]
-//                                                }
-//
-//                                                let share = try threshold_key.output_share(shareIndex: securityQuestionShareIndex, shareType: nil)
-//
-//                                                guard let finalKeyData = userData["finalKeyData"] as? [String: Any] else {
-//                                                    alertContent = "Failed to get public address from userinfo"
-//                                                    showAlert = true
-//                                                    showSpinner = SpinnerLocation.nowhere
-//                                                    return
-//                                                }
-//                                                guard let fetchKey = finalKeyData["evmAddress"] as? String else {
-//                                                    alertContent = "Failed to get public address from userinfo"
-//                                                    showAlert = true
-//                                                    return
-//                                                }
-//
-//                                                let saveId = fetchKey + ":" + String(shareCount)
-//                                                // save the security question share locally
-//                                                try KeychainInterface.save(item: share, key: saveId)
-//
-//                                                guard let detail = try? await threshold_key.reconstruct() else {
-//
-//                                                    alertContent = "Failed to reconstruct key."
-//                                                    resetAccount = true
-//                                                    showAlert = true
-//                                                    showSpinner = SpinnerLocation.nowhere
-//                                                    return
-//                                                }
-//                                                reconstructedKey = detail.key
-//                                                alertContent = "\(reconstructedKey) is the private key"
-//                                                showAlert = true
-//                                                tkeyReconstructed = true
-//                                                resetAccount = false
-//
-//                                            } else {
-//                                                alertContent = "password incorrect"
-//                                            }
-//                                        } catch {
-//                                            alertContent = "Password share input failed"
-//                                        }
-//                                        showAlert = true
-//                                    }
-//                                }))
-//                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-//                                    windowScene.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }.disabled(!tkeyInitalized)
-//                            .opacity(!tkeyInitalized ? 0.5 : 1)
+                        HStack {
+                            Text("Enter SecurityQuestion password and reconstruct tkey & save share locally")
+                            Spacer()
+                            Button(action: {
+                                let alert = UIAlertController(title: "Enter Password", message: nil, preferredStyle: .alert)
+                                alert.addTextField { textField in
+                                    textField.placeholder = "Password"
+                                }
+                                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak alert] _ in
+                                    guard let textField = alert?.textFields?.first, let answer = textField.text else { return }
+                                    Task {
+                                        do {
+                                            guard let result = try? await SecurityQuestionModule.input_share(threshold_key: threshold_key, answer: answer) else {
+                                                alertContent = "input share failed. Make sure threshold key is initialized"
+                                                showAlert = true
+                                                return
+                                            }
+                                            if result {
+                                                // save this share locally
+                                                let shareIndexes = try threshold_key.get_shares_indexes()
 
-//                        HStack {
-//                            Text("Get key details")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let key_details = try threshold_key.get_key_details()
-//                                        totalShares = Int(key_details.total_shares)
-//                                        threshold = Int(key_details.threshold)
-//                                        if key_details.required_shares > 0 {
-//                                            alertContent = "There are \(totalShares) available shares. \(key_details.required_shares) are still required to be inserted to reconstruct the key."
-//                                        } else {
-//                                            alertContent = "There are \(totalShares) available shares."
-//                                        }
-//                                        showAlert = true
-//                                        showAlert = true
-//                                    } catch {
-//                                        alertContent = "get key details failed"
-//                                        showAlert = true
-//                                    }
-//
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }.disabled(!tkeyInitalized)
-//                            .opacity(!tkeyInitalized ? 0.5 : 1)
+                                                // let's get the device share index
+                                                var securityQuestionShareIndex = ""
+                                                if shareIndexes[0] == "1" {
+                                                    securityQuestionShareIndex = shareIndexes[1]
+                                                } else {
+                                                    securityQuestionShareIndex = shareIndexes[0]
+                                                }
 
-//                        HStack {
-//                            Text("Generate new share")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let shares = try await threshold_key.generate_new_share()
-//                                        let index = shares.hex
-//                                        let key_details = try threshold_key.get_key_details()
-//                                        totalShares = Int(key_details.total_shares)
-//                                        threshold = Int(key_details.threshold)
-//                                        shareIndexCreated = index
-//                                        alertContent = "You have \(totalShares) shares. New share with index, \(index) was created"
-//                                        showAlert = true
-//                                    } catch {
-//                                        alertContent = "generate new share failed"
-//                                        showAlert = true
-//                                    }
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }.disabled(!tkeyReconstructed)
-//                            .opacity(!tkeyReconstructed ? 0.5 : 1)
+                                                let share = try threshold_key.output_share(shareIndex: securityQuestionShareIndex, shareType: nil)
 
-//                        HStack {
-//                            Text("Delete share")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        try await threshold_key.delete_share(share_index: shareIndexCreated)
-//                                        let key_details = try threshold_key.get_key_details()
-//                                        totalShares = Int(key_details.total_shares)
-//                                        threshold = Int(key_details.threshold)
-//                                        alertContent = "You have \(totalShares) shares. Share index, \(shareIndexCreated) was deleted"
-//                                    } catch {
-//                                        alertContent = "Delete share failed"
-//                                    }
-//
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//
-//                        }.disabled(!tkeyReconstructed)
-//                            .opacity(!tkeyReconstructed ? 0.5 : 1)
+                                                guard let finalKeyData = userData["finalKeyData"] as? [String: Any] else {
+                                                    alertContent = "Failed to get public address from userinfo"
+                                                    showAlert = true
+                                                    showSpinner = SpinnerLocation.nowhere
+                                                    return
+                                                }
+                                                guard let fetchKey = finalKeyData["evmAddress"] as? String else {
+                                                    alertContent = "Failed to get public address from userinfo"
+                                                    showAlert = true
+                                                    return
+                                                }
+
+                                                let saveId = fetchKey + ":" + String(shareCount)
+                                                // save the security question share locally
+                                                try KeychainInterface.save(item: share, key: saveId)
+
+                                                guard let detail = try? await threshold_key.reconstruct() else {
+
+                                                    alertContent = "Failed to reconstruct key."
+                                                    resetAccount = true
+                                                    showAlert = true
+                                                    showSpinner = SpinnerLocation.nowhere
+                                                    return
+                                                }
+                                                reconstructedKey = detail.key
+                                                alertContent = "\(reconstructedKey) is the private key"
+                                                showAlert = true
+                                                tkeyReconstructed = true
+                                                resetAccount = false
+
+                                            } else {
+                                                alertContent = "password incorrect"
+                                            }
+                                        } catch {
+                                            alertContent = "Password share input failed"
+                                        }
+                                        showAlert = true
+                                    }
+                                }))
+                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                                    windowScene.windows.first?.rootViewController?.present(alert, animated: true, completion: nil)
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }.disabled(!tkeyInitalized)
+                            .opacity(!tkeyInitalized ? 0.5 : 1)
+
+                        HStack {
+                            Text("Get key details")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let key_details = try threshold_key.get_key_details()
+                                        totalShares = Int(key_details.total_shares)
+                                        threshold = Int(key_details.threshold)
+                                        if key_details.required_shares > 0 {
+                                            alertContent = "There are \(totalShares) available shares. \(key_details.required_shares) are still required to be inserted to reconstruct the key."
+                                        } else {
+                                            alertContent = "There are \(totalShares) available shares."
+                                        }
+                                        showAlert = true
+                                        showAlert = true
+                                    } catch {
+                                        alertContent = "get key details failed"
+                                        showAlert = true
+                                    }
+
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }.disabled(!tkeyInitalized)
+                            .opacity(!tkeyInitalized ? 0.5 : 1)
+
+                        HStack {
+                            Text("Generate new share")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let shares = try await threshold_key.generate_new_share()
+                                        let index = shares.hex
+                                        let key_details = try threshold_key.get_key_details()
+                                        totalShares = Int(key_details.total_shares)
+                                        threshold = Int(key_details.threshold)
+                                        shareIndexCreated = index
+                                        alertContent = "You have \(totalShares) shares. New share with index, \(index) was created"
+                                        showAlert = true
+                                    } catch {
+                                        alertContent = "generate new share failed"
+                                        showAlert = true
+                                    }
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }.disabled(!tkeyReconstructed)
+                            .opacity(!tkeyReconstructed ? 0.5 : 1)
+
+                        HStack {
+                            Text("Delete share")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        try await threshold_key.delete_share(share_index: shareIndexCreated)
+                                        let key_details = try threshold_key.get_key_details()
+                                        totalShares = Int(key_details.total_shares)
+                                        threshold = Int(key_details.threshold)
+                                        alertContent = "You have \(totalShares) shares. Share index, \(shareIndexCreated) was deleted"
+                                    } catch {
+                                        alertContent = "Delete share failed"
+                                    }
+
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+
+                        }.disabled(!tkeyReconstructed)
+                            .opacity(!tkeyReconstructed ? 0.5 : 1)
 
                         HStack {
                             Text("Reset account")
@@ -538,327 +538,327 @@ struct ThresholdKeyView: View {
                         }
 
                     }
-//                    Section(header: Text("Security Question")) {
-//                        HStack {
-//                            Text("Add password")
-//                            Spacer()
-//                            if showSpinner == SpinnerLocation.add_password_btn {
-//                                LoaderView()
-//                            }
-//                            Button(action: {
-//                                Task {
-//                                    showInputPasswordAlert.toggle()
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert("Enter Password", isPresented: $showInputPasswordAlert) {
-//                                SecureField("Password", text: $password)
-//                                Button("Save", action: {
-//                                    Task {
-//                                        do {
-//                                            showSpinner = SpinnerLocation.add_password_btn
-//                                            let question = "what's your password?"
-//                                            _ = try await SecurityQuestionModule.generate_new_share(threshold_key: threshold_key, questions: question, answer: password)
-//
-//                                            let key_details = try threshold_key.get_key_details()
-//                                            totalShares = Int(key_details.total_shares)
-//                                            threshold = Int(key_details.threshold)
-//
-//                                            alertContent = "New password share created with password: \(password)"
-//                                            password = ""
-//                                            showAlert = true
-//                                        } catch {
-//                                            alertContent = "Generate new share with password failed. It's because password share already exists, or execution went wrong"
-//                                            showAlert = true
-//                                        }
-//                                        showSpinner = SpinnerLocation.nowhere
-//                                    }
-//                                })
-//                                Button("Cancel", role: .cancel) {}
-//                            } message: {
-//                                Text("Enter the password and generate new security question share. Please set your password securely")
-//                            }
-//                            .alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                            .disabled(showSpinner == SpinnerLocation.change_password_btn)
-//                            .opacity(showSpinner == SpinnerLocation.change_password_btn ? 0.5 : 1)
-//
-//                        }
-//
-//                        HStack {
-//                            Text("Change password")
-//                            Spacer()
-//                            if showSpinner == SpinnerLocation.change_password_btn {
-//                                LoaderView()
-//                            }
-//                            Button(action: {
-//
-//                                Task {
-//                                    showChangePasswordAlert.toggle()
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert("Change Password", isPresented: $showChangePasswordAlert) {
-//                                SecureField("New Password", text: $password)
-//                                Button("Save", action: {
-//                                    Task {
-//                                        do {
-//                                            showSpinner = SpinnerLocation.change_password_btn
-//                                            let question = "what's your password?"
-//                                            let answer = password
-//                                            // reset the password var to empty. we would not want to keep secret in state for longer.
-//                                            password = ""
-//                                            _ = try await SecurityQuestionModule.change_question_and_answer(threshold_key: threshold_key, questions: question, answer: answer)
-//                                            let key_details = try threshold_key.get_key_details()
-//                                            totalShares = Int(key_details.total_shares)
-//                                            threshold = Int(key_details.threshold)
-//
-//                                            alertContent = "Password changed to: \(answer)"
-//                                            showAlert = true
-//                                        } catch {
-//                                            alertContent = "An unexpected error occured while changing password."
-//                                            showAlert = true
-//                                        }
-//                                        showSpinner = SpinnerLocation.nowhere
-//                                    }
-//                                })
-//                                Button("Cancel", role: .cancel) {}
-//                            } message: {
-//                                Text("Please enter new password")
-//                            }
-//                            .alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//
-//                            .disabled(showSpinner == SpinnerLocation.change_password_btn)
-//                            .opacity(showSpinner == SpinnerLocation.change_password_btn ? 0.5 : 1)
-//                        }
-//
-//                        HStack {
-//                            Text("Show password")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let data = try SecurityQuestionModule.get_answer(threshold_key: threshold_key)
-//                                        let key_details = try threshold_key.get_key_details()
-//                                        totalShares = Int(key_details.total_shares)
-//                                        threshold = Int(key_details.threshold)
-//                                        alertContent = "Password is: \(data)"
-//                                        showAlert = true
-//                                    } catch {
-//                                        alertContent = "show password failed"
-//                                        showAlert = true
-//                                    }
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//                    }.disabled(!tkeyReconstructed)
-//                        .opacity(!tkeyReconstructed ? 0.5 : 1)
-//                    Section(header: Text("seed phrase")) {
-//                        HStack {
-//                            Text("Set seed pharse")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let seedPhraseToSet = "seed sock milk update focus rotate barely fade car face mechanic mercy"
-//                                        try await SeedPhraseModule.set_seed_phrase(threshold_key: threshold_key, format: "HD Key Tree", phrase: seedPhraseToSet, number_of_wallets: 0)
-//                                        phrase = seedPhraseToSet
-//                                        alertContent = "set seed phrase complete"
-//                                    } catch {
-//                                        alertContent = "set seed phrase failed"
-//                                    }
-//
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//
-//                        HStack {
-//                            Text("Change seed pharse")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let seedPhraseToChange = "object brass success calm lizard science syrup planet exercise parade honey impulse"
-//                                        try await SeedPhraseModule.change_phrase(threshold_key: threshold_key, old_phrase: "seed sock milk update focus rotate barely fade car face mechanic mercy", new_phrase: seedPhraseToChange)
-//                                        phrase = seedPhraseToChange
-//                                        alertContent = "change seed phrase complete"
-//                                    } catch {
-//                                        alertContent = "change seed phrase failed"
-//                                    }
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//
-//                        HStack {
-//                            Text("Get seed pharse")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let seedResult = try SeedPhraseModule.get_seed_phrases(threshold_key: threshold_key)
-//                                        if seedResult.isEmpty {
-//                                            alertContent = "No seed phrases set"
-//                                        } else {
-//                                            alertContent = "seed phrase is `\(seedResult[0].seedPhrase)`"
-//                                        }
-//                                    } catch {
-//                                        alertContent = "Error: \(error.localizedDescription)"
-//                                    }
-//
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//
-//                        HStack {
-//                            Text("Delete Seed phrase")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        try await SeedPhraseModule.delete_seed_phrase(threshold_key: threshold_key, phrase: phrase)
-//                                        phrase = ""
-//                                        alertContent = "delete seed phrase complete"
-//                                    } catch {
-//                                        alertContent = "delete seed phrase failed"
-//                                    }
-//
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//                    }.disabled(!tkeyReconstructed)
-//                        .opacity(!tkeyReconstructed ? 0.5 : 1)
-//                    Section(header: Text("Share Serialization")) {
-//                        HStack {
-//                            Text("Export share")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let shareStore = try await threshold_key.generate_new_share()
-//                                        let index = shareStore.hex
-//
-//                                        let key_details = try threshold_key.get_key_details()
-//                                        totalShares = Int(key_details.total_shares)
-//                                        threshold = Int(key_details.threshold)
-//                                        shareIndexCreated = index
-//
-//                                        let shareOut = try threshold_key.output_share(shareIndex: index)
-//
-//                                        let result = try ShareSerializationModule.serialize_share(threshold_key: threshold_key, share: shareOut)
-//                                        alertContent = "serialize result is \(result)"
-//                                        showAlert = true
-//                                    } catch {
-//                                        alertContent = "Export share failed: \(error.localizedDescription)"
-//                                        showAlert = true
-//                                    }
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//
-//                        }
-//                    }.disabled(!tkeyReconstructed)
-//                        .opacity(!tkeyReconstructed ? 0.5 : 1)
-//
-//                    Section(header: Text("Private Key")) {
-//                        HStack {
-//                            Text("Set Private Key")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let key_module = try PrivateKey.generate()
-//                                        let result = try await PrivateKeysModule.set_private_key(threshold_key: threshold_key, key: key_module.hex, format: "secp256k1n")
-//
-//                                        if result {
-//                                            alertContent = "Setting private key completed"
-//                                        } else {
-//                                            alertContent = "Setting private key failed"
-//                                        }
-//                                    } catch {
-//                                        alertContent = "Error: \(error.localizedDescription)"
-//                                    }
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//
-//                        }
-//
-//                        HStack {
-//                            Text("Get Private Key")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let result = try PrivateKeysModule.get_private_keys(threshold_key: threshold_key)
-//                                        alertContent = "Get private key result is \(result)"
-//                                    } catch {
-//                                        alertContent = "Failed to get private key"
-//                                    }
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//
-//                        HStack {
-//                            Text("Get Accounts")
-//                            Spacer()
-//                            Button(action: {
-//                                Task {
-//                                    do {
-//                                        let result = try PrivateKeysModule.get_private_key_accounts(threshold_key: threshold_key)
-//                                        alertContent = "Get accounts result is \(result)"
-//                                    } catch {
-//                                        alertContent = "Failed to get accounts"
-//                                    }
-//                                    showAlert = true
-//                                }
-//                            }) {
-//                                Text("")
-//                            }.alert(isPresented: $showAlert) {
-//                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
-//                            }
-//                        }
-//
-//                    }.disabled(!tkeyReconstructed)
-//                        .opacity(!tkeyReconstructed ? 0.5 : 1)
+                    Section(header: Text("Security Question")) {
+                        HStack {
+                            Text("Add password")
+                            Spacer()
+                            if showSpinner == SpinnerLocation.add_password_btn {
+                                LoaderView()
+                            }
+                            Button(action: {
+                                Task {
+                                    showInputPasswordAlert.toggle()
+                                }
+                            }) {
+                                Text("")
+                            }.alert("Enter Password", isPresented: $showInputPasswordAlert) {
+                                SecureField("Password", text: $password)
+                                Button("Save", action: {
+                                    Task {
+                                        do {
+                                            showSpinner = SpinnerLocation.add_password_btn
+                                            let question = "what's your password?"
+                                            _ = try await SecurityQuestionModule.generate_new_share(threshold_key: threshold_key, questions: question, answer: password)
+
+                                            let key_details = try threshold_key.get_key_details()
+                                            totalShares = Int(key_details.total_shares)
+                                            threshold = Int(key_details.threshold)
+
+                                            alertContent = "New password share created with password: \(password)"
+                                            password = ""
+                                            showAlert = true
+                                        } catch {
+                                            alertContent = "Generate new share with password failed. It's because password share already exists, or execution went wrong"
+                                            showAlert = true
+                                        }
+                                        showSpinner = SpinnerLocation.nowhere
+                                    }
+                                })
+                                Button("Cancel", role: .cancel) {}
+                            } message: {
+                                Text("Enter the password and generate new security question share. Please set your password securely")
+                            }
+                            .alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                            .disabled(showSpinner == SpinnerLocation.change_password_btn)
+                            .opacity(showSpinner == SpinnerLocation.change_password_btn ? 0.5 : 1)
+
+                        }
+
+                        HStack {
+                            Text("Change password")
+                            Spacer()
+                            if showSpinner == SpinnerLocation.change_password_btn {
+                                LoaderView()
+                            }
+                            Button(action: {
+
+                                Task {
+                                    showChangePasswordAlert.toggle()
+                                }
+                            }) {
+                                Text("")
+                            }.alert("Change Password", isPresented: $showChangePasswordAlert) {
+                                SecureField("New Password", text: $password)
+                                Button("Save", action: {
+                                    Task {
+                                        do {
+                                            showSpinner = SpinnerLocation.change_password_btn
+                                            let question = "what's your password?"
+                                            let answer = password
+                                            // reset the password var to empty. we would not want to keep secret in state for longer.
+                                            password = ""
+                                            _ = try await SecurityQuestionModule.change_question_and_answer(threshold_key: threshold_key, questions: question, answer: answer)
+                                            let key_details = try threshold_key.get_key_details()
+                                            totalShares = Int(key_details.total_shares)
+                                            threshold = Int(key_details.threshold)
+
+                                            alertContent = "Password changed to: \(answer)"
+                                            showAlert = true
+                                        } catch {
+                                            alertContent = "An unexpected error occured while changing password."
+                                            showAlert = true
+                                        }
+                                        showSpinner = SpinnerLocation.nowhere
+                                    }
+                                })
+                                Button("Cancel", role: .cancel) {}
+                            } message: {
+                                Text("Please enter new password")
+                            }
+                            .alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+
+                            .disabled(showSpinner == SpinnerLocation.change_password_btn)
+                            .opacity(showSpinner == SpinnerLocation.change_password_btn ? 0.5 : 1)
+                        }
+
+                        HStack {
+                            Text("Show password")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let data = try SecurityQuestionModule.get_answer(threshold_key: threshold_key)
+                                        let key_details = try threshold_key.get_key_details()
+                                        totalShares = Int(key_details.total_shares)
+                                        threshold = Int(key_details.threshold)
+                                        alertContent = "Password is: \(data)"
+                                        showAlert = true
+                                    } catch {
+                                        alertContent = "show password failed"
+                                        showAlert = true
+                                    }
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+                    }.disabled(!tkeyReconstructed)
+                        .opacity(!tkeyReconstructed ? 0.5 : 1)
+                    Section(header: Text("seed phrase")) {
+                        HStack {
+                            Text("Set seed pharse")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let seedPhraseToSet = "seed sock milk update focus rotate barely fade car face mechanic mercy"
+                                        try await SeedPhraseModule.set_seed_phrase(threshold_key: threshold_key, format: "HD Key Tree", phrase: seedPhraseToSet, number_of_wallets: 0)
+                                        phrase = seedPhraseToSet
+                                        alertContent = "set seed phrase complete"
+                                    } catch {
+                                        alertContent = "set seed phrase failed"
+                                    }
+
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+
+                        HStack {
+                            Text("Change seed pharse")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let seedPhraseToChange = "object brass success calm lizard science syrup planet exercise parade honey impulse"
+                                        try await SeedPhraseModule.change_phrase(threshold_key: threshold_key, old_phrase: "seed sock milk update focus rotate barely fade car face mechanic mercy", new_phrase: seedPhraseToChange)
+                                        phrase = seedPhraseToChange
+                                        alertContent = "change seed phrase complete"
+                                    } catch {
+                                        alertContent = "change seed phrase failed"
+                                    }
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+
+                        HStack {
+                            Text("Get seed pharse")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let seedResult = try SeedPhraseModule.get_seed_phrases(threshold_key: threshold_key)
+                                        if seedResult.isEmpty {
+                                            alertContent = "No seed phrases set"
+                                        } else {
+                                            alertContent = "seed phrase is `\(seedResult[0].seedPhrase)`"
+                                        }
+                                    } catch {
+                                        alertContent = "Error: \(error.localizedDescription)"
+                                    }
+
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+
+                        HStack {
+                            Text("Delete Seed phrase")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        try await SeedPhraseModule.delete_seed_phrase(threshold_key: threshold_key, phrase: phrase)
+                                        phrase = ""
+                                        alertContent = "delete seed phrase complete"
+                                    } catch {
+                                        alertContent = "delete seed phrase failed"
+                                    }
+
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+                    }.disabled(!tkeyReconstructed)
+                        .opacity(!tkeyReconstructed ? 0.5 : 1)
+                    Section(header: Text("Share Serialization")) {
+                        HStack {
+                            Text("Export share")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let shareStore = try await threshold_key.generate_new_share()
+                                        let index = shareStore.hex
+
+                                        let key_details = try threshold_key.get_key_details()
+                                        totalShares = Int(key_details.total_shares)
+                                        threshold = Int(key_details.threshold)
+                                        shareIndexCreated = index
+
+                                        let shareOut = try threshold_key.output_share(shareIndex: index)
+
+                                        let result = try ShareSerializationModule.serialize_share(threshold_key: threshold_key, share: shareOut)
+                                        alertContent = "serialize result is \(result)"
+                                        showAlert = true
+                                    } catch {
+                                        alertContent = "Export share failed: \(error.localizedDescription)"
+                                        showAlert = true
+                                    }
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+
+                        }
+                    }.disabled(!tkeyReconstructed)
+                        .opacity(!tkeyReconstructed ? 0.5 : 1)
+
+                    Section(header: Text("Private Key")) {
+                        HStack {
+                            Text("Set Private Key")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let key_module = try PrivateKey.generate()
+                                        let result = try await PrivateKeysModule.set_private_key(threshold_key: threshold_key, key: key_module.hex, format: "secp256k1n")
+
+                                        if result {
+                                            alertContent = "Setting private key completed"
+                                        } else {
+                                            alertContent = "Setting private key failed"
+                                        }
+                                    } catch {
+                                        alertContent = "Error: \(error.localizedDescription)"
+                                    }
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+
+                        }
+
+                        HStack {
+                            Text("Get Private Key")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let result = try PrivateKeysModule.get_private_keys(threshold_key: threshold_key)
+                                        alertContent = "Get private key result is \(result)"
+                                    } catch {
+                                        alertContent = "Failed to get private key"
+                                    }
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+
+                        HStack {
+                            Text("Get Accounts")
+                            Spacer()
+                            Button(action: {
+                                Task {
+                                    do {
+                                        let result = try PrivateKeysModule.get_private_key_accounts(threshold_key: threshold_key)
+                                        alertContent = "Get accounts result is \(result)"
+                                    } catch {
+                                        alertContent = "Failed to get accounts"
+                                    }
+                                    showAlert = true
+                                }
+                            }) {
+                                Text("")
+                            }.alert(isPresented: $showAlert) {
+                                Alert(title: Text("Alert"), message: Text(alertContent), dismissButton: .default(Text("Ok")))
+                            }
+                        }
+
+                    }.disabled(!tkeyReconstructed)
+                        .opacity(!tkeyReconstructed ? 0.5 : 1)
                 }
             }
         }
